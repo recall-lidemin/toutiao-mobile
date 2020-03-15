@@ -1,6 +1,6 @@
 <template>
-  <div>
-    我的组件
+  <div class="container">
+    用户页面
   </div>
 </template>
 

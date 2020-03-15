@@ -1,7 +1,11 @@
 <template>
   <div class="container">
     <!-- 头部导航组件 -->
-    <van-search class="search" @focus="$router.push('/search')" v-model="value" shape="round" background="red" placeholder="请输入搜索关键词" v-if="$route.path!=='/user'" />
+    <van-search class="search"
+    @focus="$router.push('/search')"
+    shape="round" background="rgb(243, 72, 72)"
+    placeholder="请输入搜索关键词"
+    v-if="$route.path!=='/user'" />
 
     <!-- <van-nav-bar title="头条" :fixed="true" v-if="$route.path!=='/user'"
       @click-right="$router.push('/search')">
