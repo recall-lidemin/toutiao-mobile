@@ -1,7 +1,5 @@
 <template>
-  <div>
-    布局也
-  </div>
+<div></div>
 </template>
 
 <script>
