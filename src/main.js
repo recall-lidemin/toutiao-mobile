@@ -4,6 +4,8 @@ import router from './router'
 import store from './store'
 import Vant from 'vant'
 import 'vant/lib/index.css'
+// 调整屏幕html根元素的font-size
+import 'amfe-flexible'
 
 Vue.use(Vant) // 全局注册Vant
 
