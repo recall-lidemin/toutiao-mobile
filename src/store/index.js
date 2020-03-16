@@ -14,7 +14,7 @@ export default new Vuex.Store({
     // 放置需要共享的状态
     user: {
       token: auth.getUser(),
-      refreshtoken: null
+      refreshToken: null
     }
   },
   mutations: {

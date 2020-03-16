@@ -27,6 +27,31 @@
  - 使用vuex状态管理token
    - vuex管理共享状态，而token正需要共享，所以选用vuex解决token共享问题
    - vuex中对状态进行持久化 ==> vuex + 前端缓存 ==实现==> 前端持久化 
+- **处理token失效(要难点)**：
+  - token两个小时过期，refresh_token14天过期，可以用refresh_token换取新的token，直到refresh_token过期
+  - 优点：
+    - 对于用户来说是无感的，用户什么都感觉不到，不会知道失效获取失效获取的过程
+    - 对于服务器来说，是安全的
+  - **处理逻辑**：
+    - 当页面抛出错误时，会在响应拦截器的error中捕获，此时判断error对象的response对象中的status属性值
+    - 如果值为401表示token失效，token不存在的情况会被路由导航守卫拦截，这里不用担心，只要是401肯定是失效了
+    - 401时，此时首先去取vuex中的refreshToken公共状态
+    - refreshToken存在：
+      
+      - 
+    - refreshToken不存在：
+      - 直接跳转到登录页面，重新登录后再回到本页面
+      - 为了能再次回到本页面，所以跳转采用push一个对象，其中将当前页面完整路径传给登录页面
+      - ```js
+        // router.currentRoute 当前路由对象，包含一个fullPath属性，是当前完整路径
+        router.push({ 
+          path: '/', 
+          redirectUrl: router.currentRoute.fullPath 
+        })
+        ```
+      - 登录页重新登录时判断redirectUrl是否存在，存在跳转地址的跳到对于地址；不存在的，直接跳到首页
+
+
 
 ### 3.3. Axios封装(同步处理大数字)
 
@@ -44,8 +69,8 @@ axios.create({
 
  - 
 
-
 ## Project setup
+
 ```
 yarn install
 ```
