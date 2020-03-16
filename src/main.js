@@ -8,6 +8,10 @@ import 'vant/lib/index.css'
 import 'amfe-flexible'
 // 引入全局样式,覆盖vant样式
 import './styles/index.less'
+// 引入axios配置文件
+import axios from './utils/request.js'
+
+Vue.use(axios)
 
 Vue.use(Vant) // 全局注册Vant
 

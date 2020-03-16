@@ -1,6 +1,6 @@
 /***
  * 封装token处理模块
- *
+ * create by LiDemin 2020/3/15
  */
 const USER_TOKEN = 'my-token'
 
