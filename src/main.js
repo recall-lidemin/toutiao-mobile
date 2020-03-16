@@ -3,6 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Vant from 'vant'
+// 引入路由权限配置模块
+import './permession/index.js'
 import 'vant/lib/index.css'
 // 调整屏幕html根元素的font-size
 import 'amfe-flexible'
