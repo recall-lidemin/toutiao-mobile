@@ -9,11 +9,16 @@ import $http from '../utils/request.js'
  * @param {*} loginForm
  */
 export function login (data) {
-  console.log(data)
-
   return $http({
     method: 'post',
     url: 'authorizations',
     data
   })
+}
+
+/**
+ * 获取用户频道列表
+ */
+export function getChannel () {
+  return $http.get('user/channels')
 }
