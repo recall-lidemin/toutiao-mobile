@@ -12,10 +12,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     // 放置需要共享的状态
-    user: {
-      token: auth.getUser(),
-      refreshToken: null
-    }
+    user: auth.getUser()
   },
   mutations: {
     // 修改token

@@ -15,14 +15,14 @@ const instance = axios.create({
 // 构造参数，相当于defaults
   baseURL: 'http://ttapi.research.itcast.cn/app/v1_0/',
   // 此属性是个数组，响应处理队列数组,此时数据还没有进到拦截器
-  transformRequest: [function (data) {
-    return data ? JSONBig.parse(data) : {}
+  transformResponse: [function (data) {
+    // return data ? JSONBig.parse(data) : {}
     // 写法二：
-    // try {
-    //   return JSONBig.parse(data)
-    // } catch (error) {
-    //   return data
-    // }
+    try {
+      return JSONBig.parse(data)
+    } catch (error) {
+      return data
+    }
   }]
 })
 
@@ -62,31 +62,31 @@ instance.interceptors.response.use(response => {
         redirectUrl: router.currentRoute.fullPath // 表示登录页需要跳转的地址
       }
     }
-    if (store.state.user.refreshToken) {
-      // 如果有refreshToken，就取换取token，直到refreshToken过期
+    if (store.state.user.refresh_token) {
+      // 如果有refresh_token，就取换取token，直到refresh_token过期
       // 此处必须用axios，不能用instance，因为instance有拦截器，注入了旧token了，所以要用新axios
       try {
         const res = await axios({
           method: 'put',
           url: 'http://ttapi.research.itcast.cn/app/v1_0/authorizations',
-          headers: { Authorization: `Bearer ${store.state.user.refreshToken}` }
+          headers: { Authorization: `Bearer ${store.state.user.refresh_token}` }
         })
         // 换取新的token，提交mutations，更新vuex状态
         store.commit('updateToken', {
           user: {
             token: res.data.data.token,
-            refreshToken: store.state.user.refreshToken
+            refresh_token: store.state.user.refresh_token
           }
         })
         // 换取新的token后，把之前的错误请求再次发送出去，此时token已经是最新的了，可以直接用instance了
         return instance(error.config)
       } catch (err) {
-        // 尝试refreshToken刷新token失败，回到登录页面
+        // 尝试refresh_token刷新token失败，回到登录页面
         store.commit('delToken')
         router.push(path)
       }
     } else {
-      // 如果没有refreshToken,直接跳转登录
+      // 如果没有refresh_token,直接跳转登录
       // router.push('/login')
       // 重新登录成功后，继续回到该页面，在哪个页面失效，就回到哪个页面
       // 所以跳转的时候，要把当前地址传给登录页
