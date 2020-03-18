@@ -66,7 +66,10 @@ axios.create({
  - 在transformRequest中处理一下大数字
 
 ### 登录
- - vant没有表单校验，需要自定义
+ 
+ - 自定义检验规则
+ - 更新vuex公共状态
+ - 重写vant组件
 
 ### 首页
 

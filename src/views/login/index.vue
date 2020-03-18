@@ -76,6 +76,8 @@ export default {
       if (mobileValidate && codeValidate) {
         try {
           const res = await login(this.loginForm)
+          console.log(res)
+
           this.updateToken({ user: res })
           const { redirectUrl } = this.$route.query
           this.$router.push(redirectUrl || '/')
