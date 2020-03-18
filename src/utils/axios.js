@@ -6,7 +6,7 @@ import router from '../router/index.js'
 // 新建axios实例
 const instance = axios.create({
   baseURL: 'http://ttapi.research.itcast.cn/app/v1_0/',
-  transformRequest: [function (data) {
+  transformResponse: [function (data) {
     return data ? JSONBig.parse(data) : {}
   }]
 })
@@ -34,18 +34,18 @@ instance.interceptors.response.use(response => {
         redirectUrl: router.currentRoute.fullPath
       }
     }
-    if (store.state.user.refreshToken) {
+    if (store.state.user.refresh_token) {
       try {
         const res = await axios({
           methods: 'PUT',
           url: 'http://ttapi.research.itcast.cn/app/v1_0/authorizations',
-          headers: { Authorization: `Bearer ${store.state.user.refreshToken}` }
+          headers: { Authorization: `Bearer ${store.state.user.refresh_token}` }
         })
 
         store.commit('updateToken', {
           user: {
             token: res.data.data.token,
-            refreshToken: store.state.user.refreshToken
+            refresh_token: store.state.user.refresh_token
           }
         })
 

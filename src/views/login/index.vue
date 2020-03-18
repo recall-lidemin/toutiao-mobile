@@ -70,16 +70,17 @@ export default {
       return true
     },
     async login () {
-      if (this.checkMobile() && this.checkCode()) {
+      // 以下代码，可以解决bug，短路表达式的bug
+      const mobileValidate = this.checkMobile()
+      const codeValidate = this.checkCode()
+      if (mobileValidate && codeValidate) {
         try {
           const res = await login(this.loginForm)
           this.updateToken({ user: res })
           const { redirectUrl } = this.$route.query
           this.$router.push(redirectUrl || '/')
         } catch (error) {
-          console.log(error)
-
-          this.$notify({ message: '手机号或验证码错误', duration: 800 })
+          this.$notice({ message: '手机号或验证码错误' })
         }
       }
     }
