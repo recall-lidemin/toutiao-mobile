@@ -2,11 +2,12 @@
   <div class="container">
     <van-tabs>
       <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
-        <div class="scroll-wrapper">
+        <!-- <div class="scroll-wrapper">
           <van-cell-group>
             <van-cell v-for="item in 20" :key="item" title="item.name" value="内容"></van-cell>
           </van-cell-group>
-        </div>
+        </div> -->
+        <ArticleList></ArticleList>
       </van-tab>
 
     </van-tabs>
@@ -17,10 +18,15 @@
 </template>
 
 <script>
+import ArticleList from './components/article-list.vue'
 import { getChannel } from '../../api/user.js'
 export default {
+  components: {
+    ArticleList
+  },
   data () {
     return {
+      // 频道列表数据
       channelList: []
     }
   },

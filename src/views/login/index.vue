@@ -15,11 +15,11 @@
       </van-field>
       <!-- 验证码 -->
       <van-field label="验证码" placeholder="请输入验证码" @blur="checkCode" v-model="loginForm.code" :error-message="errMessage.code" required maxlength="6">
-        <van-button slot="button" size="small" type="primary">发送验证码</van-button>
+        <van-button class="codeBtn" slot="button" size="small" type="default" @click="getCode" :disabled="codeBtn" > {{ codeMessage }}</van-button>
       </van-field>
     </van-cell-group>
     <!-- 登录按钮 -->
-    <van-button class="login-button" type="info" block size="small" round @click="login">登录</van-button>
+    <van-button  class="login-button" type="info" block size="small" round @click="login">登录</van-button>
   </div>
 </template>
 
@@ -34,6 +34,9 @@ export default {
         mobile: '13911111111',
         code: '246810'
       },
+      codeMessage: '获取验证码',
+      codeBtn: false,
+      code: 60,
       errMessage: {
         mobile: '',
         code: ''
@@ -69,6 +72,7 @@ export default {
       this.errMessage.code = ''
       return true
     },
+    // 登录
     async login () {
       // 以下代码，可以解决bug，短路表达式的bug
       const mobileValidate = this.checkMobile()
@@ -85,7 +89,26 @@ export default {
           this.$notice({ message: '手机号或验证码错误' })
         }
       }
+    },
+    // 获取验证码
+    getCode () {
+      this.codeBtn = true
+      this.codeMessage = this.code + 's后重新获取'
+      // getCode(this.loginForm.mobile)
+      const timer = setInterval(() => {
+        this.code--
+        this.codeMessage = this.code + 's后重新获取'
+
+        if (this.code === -1) {
+          clearInterval(timer)
+          this.codeMessage = '获取验证码'
+          this.codeBtn = false
+          this.code = 60
+        }
+      }, 1000)
     }
+  },
+  computed: {
 
   }
 }
@@ -94,5 +117,8 @@ export default {
 <style lang="less" scoped>
 .login-button{
   margin: 20px 0;
+}
+.codeBtn{
+  width: 100px;
 }
 </style>
