@@ -1,13 +1,11 @@
 <template>
   <div class="container">
     <van-tabs>
+      <!-- v-for循环渲染tab页签 -->
       <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
-        <!-- <div class="scroll-wrapper">
-          <van-cell-group>
-            <van-cell v-for="item in 20" :key="item" title="item.name" value="内容"></van-cell>
-          </van-cell-group>
-        </div> -->
-        <ArticleList></ArticleList>
+       <!-- 文章列表 -->
+       <!-- 组件传值 -->
+        <ArticleList :channelId="item.id"></ArticleList>
       </van-tab>
 
     </van-tabs>
@@ -19,7 +17,7 @@
 
 <script>
 import ArticleList from './components/article-list.vue'
-import { getChannel } from '../../api/user.js'
+import { getMyChannel } from '../../api/user.js'
 export default {
   components: {
     ArticleList
@@ -32,9 +30,7 @@ export default {
   },
   methods: {
     async getChannelList () {
-      const res = await getChannel()
-      console.log(res)
-
+      const res = await getMyChannel()
       this.channelList = res.channels
     }
   },

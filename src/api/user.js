@@ -16,6 +16,10 @@ export function login (data) {
   })
 }
 
+/**
+ * 获取手机验证码接口
+ * @param {*} mobile
+ */
 export function getCode (mobile) {
   return $http.get(`sms/codes/${mobile}`)
 }
@@ -23,6 +27,6 @@ export function getCode (mobile) {
 /**
  * 获取用户频道列表
  */
-export function getChannel () {
+export function getMyChannel () {
   return $http.get('user/channels')
 }

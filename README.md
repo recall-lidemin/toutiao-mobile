@@ -2,7 +2,8 @@
 
 ## 1. 预览地址
 
- - 
+ - 项目访问地址:
+ - 项目结构梳理: http://naotu.baidu.com/file/4a58ae06f7a73de9332b14b956fba95d?token=657bbd53af9d4dac
 
 ## 2. 技术选型
 

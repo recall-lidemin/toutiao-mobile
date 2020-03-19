@@ -42,6 +42,8 @@
 
 <script>
 export default {
+  // 接收父组件传递的频道id
+  props: ['channelId'],
   data () {
     return {
       loading: false, // 表示是否正在加载
@@ -50,7 +52,10 @@ export default {
       articleList: [],
       // 控制是否正在下拉刷新
       isLoading: false,
-      successText: ''
+      successText: '',
+      articleParams: {
+
+      }
     }
   },
   methods: {
