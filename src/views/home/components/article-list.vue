@@ -5,27 +5,25 @@
       <van-list v-model="loading" :finished="finished" @load="onLoad" finished-text="没有更多了">
         <!-- 循环生成内容 -->
         <van-cell-group>
-          <van-cell v-for="item in articleList" :key="item">
+          <van-cell v-for="item in articleList" :key="item.art_id.toString()">
             <!-- 文章列表 -->
             <div class="article_item">
               <!-- 文章标题 -->
-              <h3 class="van-ellipsis">PullRefresh下拉刷新PullRefresh下拉刷新下拉刷新下拉刷新</h3>
+              <h3 class="van-ellipsis">{{ item.title }}</h3>
               <!-- 三图模式 -->
-              <div class="img_box">
+              <div class="img_box" v-if="item.cover.images.length === 3">
                 <!-- vant组件库的图片组件,需要使用它的懒加载 -->
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w33" fit="cover" :src="item2" v-for="item2 in item.cover.images" :key="item2" />
               </div>
               <!-- 单图模式 -->
-              <!-- <div class="img_box">
-                <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-              </div> -->
+              <div class="img_box" v-if="item.cover.images.length === 1">
+                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
+              </div>
               <!-- 作者信息 -->
               <div class="info_box">
-                <span>你像一阵风</span>
-                <span>8评论</span>
-                <span>10分钟前</span>
+                <span>{{ item.aut_name }}</span>
+                <span>{{ item.comm_count }}评论</span>
+                <span>{{ item.pubdate }}</span>
                 <span class="close">
                   <van-icon name="cross"></van-icon>
                 </span>
@@ -41,6 +39,7 @@
 </template>
 
 <script>
+import { getArticleList } from '@/api/article.js'
 export default {
   // 接收父组件传递的频道id
   // 1.数组方式:props: ['channelId'],  // 字符串数组接收
@@ -60,43 +59,60 @@ export default {
       articleList: [],
       // 控制是否正在下拉刷新
       isLoading: false,
+      // 下拉刷新显示文字
       successText: '',
+      // 推荐文章接口参数
       articleParams: {
-
-      }
+        channel_id: this.channelId,
+        // 用来存放历史时间戳
+        timestamp: this.timestamp || Date.now()
+      },
+      // 存放历史时间戳
+      timestamp: null
     }
   },
   methods: {
     // 实现上拉刷新，获取数据，添加到尾部
-    onLoad () {
+    async onLoad () {
       // van-list有个bug，第一次加载必须要出现滚动条，不然以后触发不了load事件
-      console.log('开始加载数据')
       // 如果数据全部加载完毕，设置finished为true
-      if (this.articleList.length > 50) {
+      const res = await getArticleList(this.articleParams)
+      // 判断历史时间戳,如果为0说明没有数据了,直接结束,并返回
+      if (!res.pre_timestamp) {
         this.finished = true
-      } else {
-        // 生成一个数组,添加数据
-        const arrData = Array.from(Array(13), (value, index) => index + 1)
-        this.articleList.push(...arrData)
-        // 数据加载完毕，关loading
-        this.loading = false
+        return
       }
+      this.articleList.push(...res.results)
+      this.timestamp = res.pre_timestamp
+      this.loading = false
     },
     // 下拉刷新
-    // 下拉刷新要获取最新的数据，然后添加到头部
-    onRefresh () {
-      console.log('开始加载数据')
-      setTimeout(() => {
-        // 关闭加载状态
-        this.isLoading = false
-        this.successText = `更新了${arr.length}条数据`
-      }, 500)
-      const arr = Array.from(Array(5), (value, index) => '追加' + index)
-      // 数据添加到头部
-      this.articleList.unshift(...arr)
+    // 下拉刷新要获取最新的数据，直接替换原来数据
+    async onRefresh () {
+      const res = await getArticleList({
+        channel_id: this.channelId,
+        // 始终使用最新的时间戳
+        timestamp: Date.now()
+      })
+
+      // 首先判断是否返回了新数据
+      // 有,直接替换原来旧数据
+      // 没有,提示没有最新数据
+      if (res.results.length) {
+        this.articleList = res.results
+        // 覆盖旧数据后,如果返回了新数据,要判断是否有历史时间戳,如果有,需要唤醒之前关闭的finished
+        if (res.pre_timestamp) {
+          this.finished = false
+          this.timestamp = res.pre_timestamp
+        }
+        this.successText = `更新了${res.results.length}条数据`
+      } else {
+        this.successText = '当前已是最新数据'
+      }
+      // 关闭下拉加载状态
+      this.isLoading = false
     }
-  },
-  created () {}
+  }
 }
 </script>
 
