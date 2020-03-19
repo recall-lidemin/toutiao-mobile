@@ -43,7 +43,15 @@
 <script>
 export default {
   // 接收父组件传递的频道id
-  props: ['channelId'],
+  // 1.数组方式:props: ['channelId'],  // 字符串数组接收
+  // 2.对象方式:key(props属性名):value(配置对象)
+  props: {
+    channelId: {
+      required: true, // 规定该属性必须传
+      type: Number, // 表示要传入的props的属性类型
+      default: null
+    }
+  },
   data () {
     return {
       loading: false, // 表示是否正在加载
