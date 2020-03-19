@@ -68,12 +68,13 @@ axios.create({
 ### 登录
  
  - 自定义检验规则
- - 更新vuex公共状态
- - 重写vant组件
+ - ajax获取验证码，登录
+ - 登录接口返回token，更新vuex公共状态
+ - 重写vant组件，定义新的指向Vue.prototype上方法的方法
 
 ### 首页
 
- - 
+ - 封装文章列表组件
 
 ## Project setup
 

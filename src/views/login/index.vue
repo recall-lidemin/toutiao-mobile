@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { login } from '../../api/user.js'
+import { login, getCode } from '../../api/user.js'
 import { mapMutations } from 'vuex'
 export default {
   data () {
@@ -34,6 +34,7 @@ export default {
         mobile: '13911111111',
         code: '246810'
       },
+      // 保证验证码状态
       codeMessage: '获取验证码',
       codeBtn: false,
       code: 60,
@@ -44,6 +45,7 @@ export default {
     }
   },
   methods: {
+    // 解构mutations方法
     ...mapMutations(['updateToken']),
     // 校验手机号
     checkMobile () {
@@ -59,6 +61,7 @@ export default {
       this.errMessage.mobile = ''
       return true
     },
+    // 校验验证码
     checkCode () {
       if (!this.loginForm.code) {
         this.errMessage.mobile = '验证码不能为空'
@@ -94,7 +97,7 @@ export default {
     getCode () {
       this.codeBtn = true
       this.codeMessage = this.code + 's后重新获取'
-      // getCode(this.loginForm.mobile)
+      getCode(this.loginForm.mobile)
       const timer = setInterval(() => {
         this.code--
         this.codeMessage = this.code + 's后重新获取'
@@ -107,9 +110,6 @@ export default {
         }
       }, 1000)
     }
-  },
-  computed: {
-
   }
 }
 </script>

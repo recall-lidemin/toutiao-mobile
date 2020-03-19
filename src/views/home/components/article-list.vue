@@ -16,15 +16,13 @@ export default {
   },
   methods: {
     onLoad () {
-
+      // 一秒后关闭加载
+      setTimeout(() => {
+        this.finished = true
+      }, 1000)
     }
   },
-  created () {
-    // 一秒后关闭加载
-    setTimeout(() => {
-      this.finished = true
-    }, 1000)
-  }
+  created () { }
 }
 </script>
 
