@@ -42,6 +42,7 @@
 <script>
 import { getArticleList } from '@/api/article.js'
 import { mapState } from 'vuex'
+import EventBus from '@/utils/eventBus.js'
 export default {
   // 接收父组件传递的频道id
   // 1.数组方式:props: ['channelId'],  // 字符串数组接收
@@ -72,6 +73,7 @@ export default {
       },
       // 存放历史时间戳
       timestamp: null
+
     }
   },
   methods: {
@@ -117,6 +119,22 @@ export default {
       // 关闭下拉加载状态
       this.isLoading = false
     }
+  },
+
+  created () {
+    // 监听删除文章事件
+    EventBus.$on('delArticle', (artId, channelId) => {
+      // 判断传递过来的频道id是否等于自身频道
+      if (this.channelId === channelId) {
+        const articleIndex = this.articleList.findIndex(item => item.art_id.toString() === artId)
+        if (articleIndex > -1) {
+          this.articleList.splice(articleIndex, 1)
+        }
+        if (this.articleList.length < 8) {
+          this.onLoad()
+        }
+      }
+    })
   },
   computed: {
     ...mapState(['user'])

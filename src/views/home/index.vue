@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <van-tabs>
+    <van-tabs v-model="activeIndex">
       <!-- v-for循环渲染tab页签 -->
       <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
        <!-- 文章列表 -->
@@ -16,7 +16,7 @@
     </span>
     <!-- 更多操作弹层组件 -->
     <van-popup v-model="showMoreAction" style="width:80%" >
-      <MoreAction @dislike = "dislike"></MoreAction>
+      <MoreAction @dislike = "dislikeOrReport('dislike')" @report = "dislikeOrReport('report',$event)"></MoreAction>
     </van-popup>
   </div>
 </template>
@@ -25,8 +25,8 @@
 import ArticleList from './components/article-list.vue'
 import MoreAction from './components/moreAction.vue'
 import { getMyChannel } from '../../api/user.js'
-import { dislike } from '../../api/article.js'
-
+import { dislike, report } from '../../api/article.js'
+import EventBus from '../../utils/eventBus.js'
 export default {
   components: {
     ArticleList,
@@ -39,7 +39,9 @@ export default {
       // 控制是否显示弹层
       showMoreAction: false,
       // 接收存储子组件传递的文章id
-      artId: null
+      artId: null,
+      // 当前默认激活的tab页签
+      activeIndex: 0
     }
   },
   methods: {
@@ -53,15 +55,26 @@ export default {
       // 显示更多操作图层
       this.showMoreAction = true
     },
-    async dislike () {
+    // 不感兴趣文章和举报文章使用同一个方法
+    // 此时需要根据传参判断当前是不喜欢还是举报
+    // $event事件参数
+    async dislikeOrReport (operateType, type) {
       try {
-        const res = await dislike(this.artId)
-        console.log(res)
-        this.showMoreAction = false
+        operateType === 'dislike'
+          ? await dislike(this.artId) : await report({
+            target: this.artId,
+            type
+          })
         this.$notice({
           type: 'success',
           message: '操作成功'
         })
+        // 利用事件广播，通知对应tab删除对应文章数据
+        // 所以要把哪个频道的哪个文章都传过去
+        // res.toString()文章id，this.activeIndex对应频道索引,this.channelList[this.activeIndex].id频道id
+        EventBus.$emit('delArticle', this.artId, this.channelList[this.activeIndex].id)
+        // 关闭弹层
+        this.showMoreAction = false
       } catch (error) {
         this.$notice({
           type: 'danger',
@@ -69,6 +82,29 @@ export default {
         })
       }
     }
+    // 举报文章
+    // async report (type) {
+    //   try {
+    //     await report({
+    //       target: this.artId,
+    //       type
+    //     })
+    //     EventBus.$emit('delArticle', this.artId, this.channelList[this.activeIndex].id)
+    //     // 关闭弹层
+    //     this.showMoreAction = false
+
+    //     // 提示
+    //     this.$notice({
+    //       type: 'success',
+    //       message: '操作成功'
+    //     })
+    //   } catch (error) {
+    //     this.$notice({
+    //       type: 'danger',
+    //       message: '操作失败'
+    //     })
+    //   }
+    // }
   },
   created () {
     this.getChannelList()
