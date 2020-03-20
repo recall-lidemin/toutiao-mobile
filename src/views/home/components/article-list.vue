@@ -25,7 +25,8 @@
                 <span>{{ item.comm_count }}评论</span>
                 <span>{{ item.pubdate | transTime }}</span>
                 <!-- 叉号的显示应该根据登录状态判断，登录了才显示，没有登录不显示 -->
-                <span class="close" v-if="user.token" @click="$emit('show')">
+                <!-- 触发父组件事件，并传值文字id -->
+                <span class="close" v-if="user.token" @click="$emit('show',item.art_id.toString())">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>

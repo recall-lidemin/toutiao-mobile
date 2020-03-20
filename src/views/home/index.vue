@@ -36,7 +36,9 @@ export default {
       // 频道列表数据
       channelList: [],
       // 控制是否显示弹层
-      showMoreAction: false
+      showMoreAction: false,
+      // 接收存储子组件传递的文章id
+      artId: null
     }
   },
   methods: {
@@ -44,7 +46,10 @@ export default {
       const res = await getMyChannel()
       this.channelList = res.channels
     },
-    show () {
+    show (artId) {
+      // 接收存储id
+      this.artId = artId
+      // 显示更多操作图层
       this.showMoreAction = true
     }
   },
