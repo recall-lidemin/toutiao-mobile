@@ -4,34 +4,48 @@
       <!-- v-for循环渲染tab页签 -->
       <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
        <!-- 文章列表 -->
-       <!-- 组件传值 -->
-        <ArticleList :channelId="item.id"></ArticleList>
+       <!-- 组件传值props
+            $emit()
+        -->
+        <ArticleList :channelId="item.id" @show = "show"></ArticleList>
       </van-tab>
 
     </van-tabs>
     <span class="bar_btn">
       <van-icon name="wap-nav" />
     </span>
+    <!-- 更多操作弹层组件 -->
+    <van-popup v-model="showMoreAction" style="width:80%" >
+      <MoreAction></MoreAction>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import ArticleList from './components/article-list.vue'
+import MoreAction from './components/moreAction.vue'
 import { getMyChannel } from '../../api/user.js'
+
 export default {
   components: {
-    ArticleList
+    ArticleList,
+    MoreAction
   },
   data () {
     return {
       // 频道列表数据
-      channelList: []
+      channelList: [],
+      // 控制是否显示弹层
+      showMoreAction: false
     }
   },
   methods: {
     async getChannelList () {
       const res = await getMyChannel()
       this.channelList = res.channels
+    },
+    show () {
+      this.showMoreAction = true
     }
   },
   created () {

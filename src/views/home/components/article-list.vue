@@ -24,7 +24,8 @@
                 <span>{{ item.aut_name }}</span>
                 <span>{{ item.comm_count }}评论</span>
                 <span>{{ item.pubdate | transTime }}</span>
-                <span class="close">
+                <!-- 叉号的显示应该根据登录状态判断，登录了才显示，没有登录不显示 -->
+                <span class="close" v-if="user.token" @click="$emit('show')">
                   <van-icon name="cross"></van-icon>
                 </span>
               </div>
@@ -39,6 +40,7 @@
 
 <script>
 import { getArticleList } from '@/api/article.js'
+import { mapState } from 'vuex'
 export default {
   // 接收父组件传递的频道id
   // 1.数组方式:props: ['channelId'],  // 字符串数组接收
@@ -52,6 +54,7 @@ export default {
   },
   data () {
     return {
+
       loading: false, // 表示是否正在加载
       finished: false, // 表示全部数据是否都被加载完成
       // 文章列表数组
@@ -113,6 +116,9 @@ export default {
       // 关闭下拉加载状态
       this.isLoading = false
     }
+  },
+  computed: {
+    ...mapState(['user'])
   }
 }
 </script>
