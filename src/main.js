@@ -2,7 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Vant from 'vant'
+// 引入vant(默认对象)组件，Lazyload(平常对象) 图片懒加载组件
+import Vant, { Lazyload } from 'vant'
 import Plugin from './utils/plugin.js'
 // 引入vant的less样式，方便自定义主题，在vue.config.js中修改变量
 import 'vant/lib/index.less'
@@ -14,6 +15,7 @@ import 'amfe-flexible'
 import './styles/index.less'
 
 Vue.use(Vant) // 全局注册Vant
+Vue.use(Lazyload) // 全局注册lazyload指令
 Vue.use(Plugin)
 
 Vue.config.productionTip = false
@@ -23,3 +25,6 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+// export default {} 导出默认对象
+// export function {} 导出平常对象

@@ -12,12 +12,12 @@
               <h3 class="van-ellipsis">{{ item.title }}</h3>
               <!-- 三图模式 -->
               <div class="img_box" v-if="item.cover.images.length === 3">
-                <!-- vant组件库的图片组件,需要使用它的懒加载 -->
-                <van-image class="w33" fit="cover" :src="item2" v-for="item2 in item.cover.images" :key="item2" />
+                <!-- vant组件库的图片组件,需要使用它的懒加载lazy-load -->
+                <van-image lazy-load class="w33" fit="cover" :src="item2" v-for="item2 in item.cover.images" :key="item2" />
               </div>
               <!-- 单图模式 -->
               <div class="img_box" v-if="item.cover.images.length === 1">
-                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
+                <van-image lazy-load class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
               <!-- 作者信息 -->
               <div class="info_box">
@@ -29,7 +29,6 @@
                 </span>
               </div>
             </div>
-
           </van-cell>
         </van-cell-group>
       </van-list>
