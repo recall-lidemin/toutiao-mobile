@@ -18,3 +18,19 @@ export function getArticleList (params) {
       }
     })
 }
+
+/**
+ * 不感兴趣文章接口
+ * @param {*} artid
+ */
+export function dislike (artid) {
+  return $http.post('article/dislikes', { target: artid })
+}
+
+/**
+ * 举报文章接口
+ * @param {*} params
+ */
+export function report (params) {
+  return $http.post('article/reports', params)
+}

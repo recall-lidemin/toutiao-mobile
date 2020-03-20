@@ -16,7 +16,7 @@
     </span>
     <!-- 更多操作弹层组件 -->
     <van-popup v-model="showMoreAction" style="width:80%" >
-      <MoreAction></MoreAction>
+      <MoreAction @dislike = "dislike"></MoreAction>
     </van-popup>
   </div>
 </template>
@@ -25,6 +25,7 @@
 import ArticleList from './components/article-list.vue'
 import MoreAction from './components/moreAction.vue'
 import { getMyChannel } from '../../api/user.js'
+import { dislike } from '../../api/article.js'
 
 export default {
   components: {
@@ -51,6 +52,22 @@ export default {
       this.artId = artId
       // 显示更多操作图层
       this.showMoreAction = true
+    },
+    async dislike () {
+      try {
+        const res = await dislike(this.artId)
+        console.log(res)
+        this.showMoreAction = false
+        this.$notice({
+          type: 'success',
+          message: '操作成功'
+        })
+      } catch (error) {
+        this.$notice({
+          type: 'danger',
+          message: '操作失败'
+        })
+      }
     }
   },
   created () {
