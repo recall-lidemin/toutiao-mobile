@@ -10,7 +10,7 @@
       <!-- 我的频道 -->
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
-          <span class="f12">{{ item.name }}</span>
+          <span class="f12" :class="{ red: currentActiveIndex === index }" @click="$emit('tochannel',index)">{{ item.name }}</span>
           <!-- 叉号标签，应该在编辑状态显示 -->
           <van-icon class="btn" name="cross" v-if="editing && index!==0"></van-icon>
         </van-grid-item>
@@ -21,9 +21,9 @@
     <div class="channel">
       <div class="tit">可选频道：</div>
       <van-grid class="van-hairline--left">
-        <van-grid-item v-for="index in 8" :key="index">
-          <span class="f12">频道{{index}}</span>
-          <van-icon class="btn" name="plus"></van-icon>
+        <van-grid-item v-for="item in optionChannels" :key="item.id">
+          <span class="f12">{{ item.name }}</span>
+          <van-icon class="btn" name="plus" v-if="editing"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { getAllChannels } from '@/api/channel'
 export default {
   // props: ['channels'],
   props: {
@@ -39,11 +40,34 @@ export default {
       type: Array,
       // 此函数表示默认返回一个空数组
       default: () => []
+    },
+    // 当前激活频道的索引
+    currentActiveIndex: {
+      required: true,
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
-      editing: false
+      editing: false,
+      // 全部频道数据
+      allChannelList: []
+    }
+  },
+  methods: {
+    async getAllChannels () {
+      const res = await getAllChannels()
+      this.allChannelList = res.channels
+    }
+  },
+  created () {
+    this.getAllChannels()
+  },
+  computed: {
+    // 筛选可选频道：可选频道 = 全部频道 - 我的频道
+    optionChannels () {
+      return this.allChannelList.filter(item => !this.channels.some(o => o.id === item.id))
     }
   }
 }

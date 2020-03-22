@@ -22,7 +22,7 @@
     <!-- 上来菜单组件 -->
     <van-action-sheet v-model="showChannelEdit" title="频道编辑" :round="false">
       <!-- 将父组件的数据传递给子组件 -->
-      <ChannelEdit :channels="channelList" />
+      <ChannelEdit :channels="channelList" @tochannel = "toChannel" :currentActiveIndex = "activeIndex" />
     </van-action-sheet>
   </div>
 </template>
@@ -61,6 +61,11 @@ export default {
     async getChannelList () {
       const res = await getMyChannel()
       this.channelList = res.channels
+    },
+    toChannel (currentIndex) {
+      // const currentIndex = this.channelList.findIndex(item => item.id.toString() === channelId)
+      this.activeIndex = currentIndex
+      this.showChannelEdit = false
     },
     show (artId) {
       // 接收存储id
