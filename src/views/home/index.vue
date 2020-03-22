@@ -20,7 +20,7 @@
       <MoreAction @dislike = "dislikeOrReport('dislike')" @report = "dislikeOrReport('report',$event)"></MoreAction>
     </van-popup>
     <!-- 上来菜单组件 -->
-    <van-action-sheet v-model="showChannelEdit" title="频道编辑" :round="false">
+    <van-action-sheet v-model="showChannelEdit" title="频道编辑" :round="false" @closed = "actionSheetClosed">
       <!-- 将父组件的数据传递给子组件 -->
       <ChannelEdit :channels="channelList" @tochannel = "toChannel" :currentActiveIndex = "activeIndex" />
     </van-action-sheet>
@@ -99,6 +99,10 @@ export default {
           message: '操作失败'
         })
       }
+    },
+    // 监听上拉弹层关闭事件
+    actionSheetClosed () {
+      EventBus.$emit('resetActionSheet')
     }
   },
   created () {

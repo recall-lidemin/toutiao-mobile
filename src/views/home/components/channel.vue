@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import EventBus from '@/utils/eventBus.js'
 import { getAllChannels } from '@/api/channel'
 export default {
   // props: ['channels'],
@@ -63,6 +64,7 @@ export default {
   },
   created () {
     this.getAllChannels()
+    EventBus.$on('resetActionSheet', () => (this.editing = false))
   },
   computed: {
     // 筛选可选频道：可选频道 = 全部频道 - 我的频道
