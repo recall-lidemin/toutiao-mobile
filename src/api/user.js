@@ -23,10 +23,3 @@ export function login (data) {
 export function getCode (mobile) {
   return $http.get(`sms/codes/${mobile}`)
 }
-
-/**
- * 获取用户频道列表
- */
-export function getMyChannel () {
-  return $http.get('user/channels')
-}

@@ -31,7 +31,7 @@
 import ArticleList from './components/article-list.vue'
 import MoreAction from './components/moreAction.vue'
 import ChannelEdit from './components/channel.vue'
-import { getMyChannel } from '../../api/user.js'
+import { getMyChannel } from '../../api/channel.js'
 import { dislike, report } from '../../api/article.js'
 import EventBus from '../../utils/eventBus.js'
 export default {
