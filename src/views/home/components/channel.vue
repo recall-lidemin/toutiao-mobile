@@ -25,7 +25,7 @@
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="item in optionChannels" :key="item.id">
           <span class="f12">{{ item.name }}</span>
-          <van-icon class="btn" name="plus" v-if="editing"></van-icon>
+          <van-icon class="btn" name="plus" v-if="editing" @click="$emit('addChannel',item)"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
