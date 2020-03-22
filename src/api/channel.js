@@ -62,3 +62,18 @@ export function delChannel (id) {
     }
   })
 }
+
+/**
+ * 封装本地添加频道接口
+ * @param {*} data
+ */
+export function addChannel (data) {
+  return new Promise(function (resolve, reject) {
+    // 根据当前登录状态(有无token)，判断使用哪个用户的key
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
+    const channels = JSON.parse(localStorage.getItem(key))
+    channels.push(data)
+    localStorage.setItem(key, JSON.stringify(channels))
+    resolve()
+  })
+}
