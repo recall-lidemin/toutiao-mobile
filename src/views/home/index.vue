@@ -11,26 +11,37 @@
       </van-tab>
 
     </van-tabs>
-    <span class="bar_btn">
+    <!-- 频道编辑图标 -->
+    <span class="bar_btn" @click="showChannelEdit = true">
       <van-icon name="wap-nav" />
     </span>
     <!-- 更多操作弹层组件 -->
     <van-popup v-model="showMoreAction" style="width:80%" >
       <MoreAction @dislike = "dislikeOrReport('dislike')" @report = "dislikeOrReport('report',$event)"></MoreAction>
     </van-popup>
+    <!-- 上来菜单组件 -->
+    <van-action-sheet v-model="showChannelEdit" title="频道编辑" :round="false">
+      <!-- 将父组件的数据传递给子组件 -->
+      <ChannelEdit :channels="channelList" />
+    </van-action-sheet>
   </div>
 </template>
 
 <script>
 import ArticleList from './components/article-list.vue'
 import MoreAction from './components/moreAction.vue'
+import ChannelEdit from './components/channel.vue'
 import { getMyChannel } from '../../api/user.js'
 import { dislike, report } from '../../api/article.js'
 import EventBus from '../../utils/eventBus.js'
 export default {
   components: {
+    // 文章列表组件
     ArticleList,
-    MoreAction
+    // 更多操作组件
+    MoreAction,
+    // 编辑频道组件
+    ChannelEdit
   },
   data () {
     return {
@@ -41,7 +52,9 @@ export default {
       // 接收存储子组件传递的文章id
       artId: null,
       // 当前默认激活的tab页签
-      activeIndex: 0
+      activeIndex: 0,
+      // 控制上拉频道编辑弹层显示隐藏
+      showChannelEdit: false
     }
   },
   methods: {
@@ -82,31 +95,9 @@ export default {
         })
       }
     }
-    // 举报文章
-    // async report (type) {
-    //   try {
-    //     await report({
-    //       target: this.artId,
-    //       type
-    //     })
-    //     EventBus.$emit('delArticle', this.artId, this.channelList[this.activeIndex].id)
-    //     // 关闭弹层
-    //     this.showMoreAction = false
-
-    //     // 提示
-    //     this.$notice({
-    //       type: 'success',
-    //       message: '操作成功'
-    //     })
-    //   } catch (error) {
-    //     this.$notice({
-    //       type: 'danger',
-    //       message: '操作失败'
-    //     })
-    //   }
-    // }
   },
   created () {
+    // 获取我的频道
     this.getChannelList()
   }
 }
@@ -165,6 +156,18 @@ export default {
     z-index: 1000;
     &::before {
       font-size: 20px;
+    }
+  }
+}
+// 处理弹出编辑频道面板样式
+.van-action-sheet {
+  max-height: 100%;
+  height: 100%;
+  .van-action-sheet__header {
+    background: #3296fa;
+    color: #fff;
+    .van-icon-close {
+      color: #fff;
     }
   }
 }
