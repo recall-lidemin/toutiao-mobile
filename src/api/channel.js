@@ -45,18 +45,18 @@ export function getAllChannels () {
 
 /**
  * 封装本地删除频道接口
- * @param {*} params
+ * @param {*} id
  */
-export function delChannel (params) {
+export function delChannel (id) {
   return new Promise(function (resolve, reject) {
     // 根据当前登录状态(有无token)，判断使用哪个用户的key
     const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
     const channels = JSON.parse(localStorage.getItem(key))
-    const index = channels.findIdnex(item => item.id === params)
+    const index = channels.findIndex(item => item.id === id)
     if (index > -1) {
       channels.splice(index, 1)
       localStorage.setItem(key, JSON.stringify(channels))
-      resolve({ messgae: '删除成功' })
+      resolve()
     } else {
       reject(new Error('没有找到对应频道'))
     }

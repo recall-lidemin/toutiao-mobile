@@ -22,7 +22,7 @@
     <!-- 上来菜单组件 -->
     <van-action-sheet v-model="showChannelEdit" title="频道编辑" :round="false" @closed = "actionSheetClosed">
       <!-- 将父组件的数据传递给子组件 -->
-      <ChannelEdit :channels="channelList" @tochannel = "toChannel" :currentActiveIndex = "activeIndex" />
+      <ChannelEdit :channels="channelList" @tochannel = "toChannel" :currentActiveIndex = "activeIndex" @delchannel = "delChannel" />
     </van-action-sheet>
   </div>
 </template>
@@ -31,7 +31,7 @@
 import ArticleList from './components/article-list.vue'
 import MoreAction from './components/moreAction.vue'
 import ChannelEdit from './components/channel.vue'
-import { getMyChannel } from '../../api/channel.js'
+import { getMyChannel, delChannel } from '../../api/channel.js'
 import { dislike, report } from '../../api/article.js'
 import EventBus from '../../utils/eventBus.js'
 export default {
@@ -58,9 +58,30 @@ export default {
     }
   },
   methods: {
+    // 获取频道
     async getChannelList () {
       const res = await getMyChannel()
       this.channelList = res.channels
+    },
+    // 删除频道
+    async delChannel (id) {
+      try {
+        // 删除本地缓存
+
+        await delChannel(id)
+        console.log(id)
+        // 删除页面上
+        const index = this.channelList.findIndex(item => item.id === id)
+        // 如果删除激活频道之前的频道，删除后，要把激活频道往前挪一位
+        if (index > -1) {
+          if (index <= this.activeIndex) {
+            this.activeIndex -= 1
+          }
+          this.channelList.splice(index, 1)
+        }
+      } catch (error) {
+
+      }
     },
     // 点击跳转对应频道
     toChannel (currentIndex) {

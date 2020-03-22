@@ -11,8 +11,10 @@
       <van-grid class="van-hairline--left">
         <van-grid-item v-for="(item,index) in channels" :key="item.id">
           <span class="f12" :class="{ red: currentActiveIndex === index }" @click="$emit('tochannel',index)">{{ item.name }}</span>
-          <!-- 叉号标签，应该在编辑状态显示 -->
-          <van-icon class="btn" name="cross" v-if="editing && index!==0"></van-icon>
+          <!-- 叉号标签，应该在编辑状态显示
+              调用父组件方法，并把频道id传出
+           -->
+          <van-icon class="btn" name="cross" v-if="editing && index!==0" @click="$emit('delchannel',item.id)"></van-icon>
         </van-grid-item>
       </van-grid>
     </div>
