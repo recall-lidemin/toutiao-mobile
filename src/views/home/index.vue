@@ -62,6 +62,7 @@ export default {
       const res = await getMyChannel()
       this.channelList = res.channels
     },
+    // 点击跳转对应频道
     toChannel (currentIndex) {
       // const currentIndex = this.channelList.findIndex(item => item.id.toString() === channelId)
       this.activeIndex = currentIndex

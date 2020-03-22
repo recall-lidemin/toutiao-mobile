@@ -10,6 +10,7 @@ import store from '../store/index.js'
 const CACHE_CHANNEL_V = 'user-v'
 // 游客的key
 const CACHE_CHANNEL_T = 'user-t'
+
 /**
  * 获取用户频道列表
  * 重构频道api,实现本地化
@@ -40,4 +41,24 @@ export function getMyChannel () {
  */
 export function getAllChannels () {
   return $http.get('channels')
+}
+
+/**
+ * 封装本地删除频道接口
+ * @param {*} params
+ */
+export function delChannel (params) {
+  return new Promise(function (resolve, reject) {
+    // 根据当前登录状态(有无token)，判断使用哪个用户的key
+    const key = store.state.user.token ? CACHE_CHANNEL_V : CACHE_CHANNEL_T
+    const channels = JSON.parse(localStorage.getItem(key))
+    const index = channels.findIdnex(item => item.id === params)
+    if (index > -1) {
+      channels.splice(index, 1)
+      localStorage.setItem(key, JSON.stringify(channels))
+      resolve({ messgae: '删除成功' })
+    } else {
+      reject(new Error('没有找到对应频道'))
+    }
+  })
 }
