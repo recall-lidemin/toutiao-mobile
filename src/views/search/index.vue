@@ -5,7 +5,7 @@
      @click-left="$router.back()"></van-nav-bar>
 
     <!-- 导航 -->
-    <van-search @input="search" @search = "onSearch"  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
+    <van-search @search = "onSearch"  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
 
     <!-- 联想搜索展示 -->
     <van-cell-group class="suggest-box" v-if="query">
