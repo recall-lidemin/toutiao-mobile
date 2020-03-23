@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <!-- 搜索组件一级路由   返回上一个页面-->
-    <van-nav-bar left-arrow title="搜索中心" @click-left="$router.back()"></van-nav-bar>
+    <van-nav-bar left-arrow @click-left="$router.back()"></van-nav-bar>
     <!-- 导航 -->
-    <van-search  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
-
+    <van-search @search = "onSearch"  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
+    <!-- 联想搜索 -->
     <van-cell-group class="suggest-box" v-if="query">
       <van-cell icon="search">
-        <span>j</span>ava
+
       </van-cell>
     </van-cell-group>
-    <!--  -->
+    <!-- 历史记录 -->
     <div class="history-box" v-else >
       <!-- 只有存在历史记录时才会显示 -->
       <div class="head" v-if="historyList.length">
@@ -48,9 +48,17 @@ export default {
       localStorage.setItem(key, JSON.stringify(this.historyList))
     },
     // 清空历史记录
-    clearAll () {
-      this.historyList = []
-      localStorage.setItem(key, JSON.stringify(this.historyList))
+    async clearAll () {
+      try {
+        await this.$dialog.confirm({
+          title: '提示',
+          message: '您确认删除所有历史记录吗'
+        })
+        this.historyList = []
+        localStorage.setItem(key, JSON.stringify(this.historyList))
+      } catch (error) {
+
+      }
     },
     // 点击历史记录跳转到搜索结果页
     toResult (query) {
@@ -65,7 +73,25 @@ export default {
           q: query
         }
       })
-      // params传参
+      // params传参,需要设置路由
+    },
+    // 搜索事件
+    onSearch () {
+      // 点击搜索，
+      // 首先判断搜索内容是否为空
+      if (!this.query) return
+      // 搜索内容添加到历史记录
+      this.historyList.unshift(this.query)
+      // 对历史记录进行去重，避免数据冗余
+      this.historyList = [...new Set(this.historyList)]
+      // 同步到本地缓存
+      window.localStorage.setItem(key, JSON.stringify(this.historyList))
+      this.$router.push({
+        path: '/search/result',
+        query: {
+          q: this.query
+        }
+      })
     }
   },
   created () {
