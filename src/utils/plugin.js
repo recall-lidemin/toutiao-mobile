@@ -17,6 +17,7 @@ export default {
     // 重写vant的notify组件，修改其默认显示时间为800毫秒
     Vue.prototype.$notice = params => Vue.prototype.$notify({ duration: 800, ...params })
     Vue.prototype.$sleep = sleep
+    Vue.prototype.$debounce = _debounce
     // Vue.filter(名称，函数)
     Vue.filter('transTime', transTime) // 注册全局过滤器
   }
@@ -37,3 +38,31 @@ function transTime (date) {
   // locale()本地语言包转换
   return dayjs().locale('zh-cn').from(date) // from中是日期，或dayjs得到的时间
 }
+
+/**
+ * 封装防抖函数
+ */
+function _debounce (fn, delay) {
+  var timer = null
+  return function () {
+    clearTimeout(timer)
+    timer = setTimeout(function () {
+      fn()
+    }, delay)
+  }
+}
+
+/**
+ * 封装节流函数
+ *
+ */
+// function _throttle (fn, delay) {
+//   var lastTime = 0
+//   return function () {
+//     const nowDate = Date.now
+//     if (nowDate - lastTime > delay) {
+//       fn()
+//       lastTime = nowDate
+//     }
+//   }
+// }

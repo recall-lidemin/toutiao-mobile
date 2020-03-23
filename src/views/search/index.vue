@@ -3,14 +3,17 @@
     <!-- 搜索组件一级路由   返回上一个页面-->
     <van-nav-bar left-arrow
      @click-left="$router.back()"></van-nav-bar>
+
     <!-- 导航 -->
     <van-search @input="search" @search = "onSearch"  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
+
     <!-- 联想搜索展示 -->
     <van-cell-group class="suggest-box" v-if="query">
       <van-cell icon="search" v-for="(item,index) in searchList" :key="index" @click="toResult(item)">
         {{ item }}
       </van-cell>
     </van-cell-group>
+
     <!-- 历史记录 -->
     <div class="history-box" v-else >
       <!-- 只有存在历史记录时才会显示 -->
@@ -43,6 +46,7 @@ export default {
       historyList: [],
       // 联想记录
       searchList: []
+
     }
   },
   methods: {
@@ -71,6 +75,12 @@ export default {
       // 路由传参：query传参
       // 1.地址拼接：this.$router.push(`/search/result?q=${item}`)
       // 2.对象形式：
+      // 搜索内容添加到历史记录
+      this.historyList.unshift(query)
+      // 对历史记录进行去重，避免数据冗余
+      this.historyList = [...new Set(this.historyList)]
+      // 同步到本地缓存
+      window.localStorage.setItem(key, JSON.stringify(this.historyList))
       this.$router.push({
         path: '/search/result',
         query: {
@@ -96,13 +106,35 @@ export default {
           q: this.query
         }
       })
-    },
-    // 监听搜索框的实时输入，实现联想搜索
-    async search () {
-      const res = await getSuggestion(this.query)
-      console.log(res)
+    }
+  },
+  watch: {
+    // 函数防抖，一段时间触发多次函数的话，只执行最后一次
+    // query () {
+    //   clearTimeout(this.timer)
+    //   this.timer = setTimeout(async () => {
+    //     if (!this.query) {
+    //       this.searchList = []
+    //       return
+    //     }
+    //     const res = await getSuggestion(this.query)
+    //     this.searchList = res.options
+    //   }, 500)
+    // }
 
-      this.searchList = res.options
+    // 函数节流
+    query () {
+      if (!this.timer) {
+        this.timer = setTimeout(async () => {
+          this.timer = null
+          if (!this.query) {
+            this.searchList = []
+            return
+          }
+          const res = await getSuggestion(this.query)
+          this.searchList = res.options
+        }, 800)
+      }
     }
   },
   created () {
