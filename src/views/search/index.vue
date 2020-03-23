@@ -1,13 +1,14 @@
 <template>
   <div class="container">
     <!-- 搜索组件一级路由   返回上一个页面-->
-    <van-nav-bar left-arrow @click-left="$router.back()"></van-nav-bar>
+    <van-nav-bar left-arrow
+     @click-left="$router.back()"></van-nav-bar>
     <!-- 导航 -->
-    <van-search @search = "onSearch"  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
-    <!-- 联想搜索 -->
+    <van-search @input="search" @search = "onSearch"  placeholder="请输入搜索关键词" shape="round" v-model.trim="query" />
+    <!-- 联想搜索展示 -->
     <van-cell-group class="suggest-box" v-if="query">
-      <van-cell icon="search">
-
+      <van-cell icon="search" v-for="(item,index) in searchList" :key="index" @click="toResult(item)">
+        {{ item }}
       </van-cell>
     </van-cell-group>
     <!-- 历史记录 -->
@@ -30,6 +31,7 @@
 </template>
 
 <script>
+import { getSuggestion } from '@/api/search.js'
 // 存储搜索记录本地缓存的key
 const key = 'toutiao-history'
 export default {
@@ -38,7 +40,9 @@ export default {
       // 查询字段
       query: '',
       // 存储历史记录
-      historyList: []
+      historyList: [],
+      // 联想记录
+      searchList: []
     }
   },
   methods: {
@@ -92,6 +96,13 @@ export default {
           q: this.query
         }
       })
+    },
+    // 监听搜索框的实时输入，实现联想搜索
+    async search () {
+      const res = await getSuggestion(this.query)
+      console.log(res)
+
+      this.searchList = res.options
     }
   },
   created () {
