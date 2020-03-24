@@ -50,3 +50,11 @@ export function getArticleInfo (id) {
 export function getComments (params) {
   return $http.get('comments', { params })
 }
+
+/**
+ * 发表评论，回复评论接口
+ * @param {*} data
+ */
+export function comments (data) {
+  return $http.post('comments', data)
+}
