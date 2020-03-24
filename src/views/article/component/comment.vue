@@ -34,7 +34,7 @@
     </div>
 
      <!-- 回复 -->
-    <van-action-sheet v-model="showReply" :round="false" class="reply_dialog" title="回复评论">
+    <van-action-sheet v-model="showReply" :round="false" class="reply_dialog" title="回复评论"  @closed="closed">
       <van-list :immediate-check="false" v-model="reply.loading" :finished="reply.finished" finished-text="没有更多了" @load="onReplyLoad">
         <div class="item van-hairline--bottom van-hairline--top" v-for="item in reply.replyCommentList" :key="item.com_id.toString()">
           <van-image round width="1rem" height="1rem" fit="fill" :src="item.aut_photo" />
@@ -91,8 +91,6 @@ export default {
         source: artId,
         offset: this.offset
       })
-      console.log(res)
-
       this.commentList.push(...res.results)
       this.loading = false
       // 分页
@@ -105,6 +103,7 @@ export default {
     async openReply (id) {
       this.showReply = true
       this.reply.commId = id
+
       // 每次打开回复需要重置数据
       this.reply.replyCommentList = []
       this.reply.offset = null
@@ -126,16 +125,34 @@ export default {
         this.reply.offset = res.last_id
       }
     },
+    // 对文章发表评论
     async submit () {
       // 对文章发表评论
       const { artId } = this.$route.query
+      // 接口更新后台数据
       const res = await comments({
-        target: artId,
-        content: this.value
+        target: this.reply.commId === null ? artId : this.reply.commId,
+        content: this.value,
+        art_id: this.reply.commId === null ? null : artId
       })
       console.log(res)
+      // 清空输入框
       this.value = ''
-      this.commentList.unshift(res.new_obj)
+      // 根据接口返回数据更新前台数据
+      if (!this.reply.commId) {
+        this.commentList.unshift(res.new_obj)
+      } else {
+        this.reply.replyCommentList.unshift(res.new_obj)
+        // 更新评论回复数量
+        console.log(this.reply.commId)
+        const replyCount = this.commentList.find(item => item.com_id.toString() === this.reply.commId)
+        replyCount.reply_count++
+      }
+    },
+    // 监听回复框关闭事件
+    closed () {
+      // 关闭回复框之后重置
+      this.reply.commId = null
     }
   }
 }

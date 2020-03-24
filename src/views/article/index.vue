@@ -43,7 +43,6 @@ export default {
     async getArticleInfo () {
       const { artId } = this.$route.query
       const res = await getArticleInfo(artId)
-      console.log(res)
       this.articleInfo = res
     },
     // 关注用户
