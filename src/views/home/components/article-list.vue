@@ -79,7 +79,7 @@ export default {
   methods: {
     // 实现上拉刷新，获取数据，添加到尾部
     async onLoad () {
-      this.$sleep()
+      await this.$sleep()
       // van-list有个bug，第一次加载必须要出现滚动条，不然以后触发不了load事件
       // 如果数据全部加载完毕，设置finished为true
       const res = await getArticleList(this.articleParams)
@@ -95,7 +95,7 @@ export default {
     // 下拉刷新
     // 下拉刷新要获取最新的数据，直接替换原来数据
     async onRefresh () {
-      this.$sleep()
+      await this.$sleep()
       const res = await getArticleList({
         channel_id: this.channelId,
         // 始终使用最新的时间戳
