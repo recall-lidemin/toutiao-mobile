@@ -1,26 +1,26 @@
 <template>
   <div class="comment">
-    <van-list v-model="loading" :finished="finished" finished-text="没有更多了">
-      <div class="item van-hairline--bottom van-hairline--top" v-for="index in 5" :key="index">
+    <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+      <div class="item van-hairline--bottom van-hairline--top" v-for="item in commentList" :key="item.com_id.toString()">
         <van-image
           round
           width="1rem"
           height="1rem"
           fit="fill"
-          src="https://img.yzcdn.cn/vant/cat.jpeg"
+          :src="item.aut_photo"
         />
         <div class="info">
           <p>
-            <span class="name">一阵清风</span>
+            <span class="name">{{ item.aut_name }}</span>
             <span style="float:right">
               <span class="van-icon van-icon-good-job-o zan"></span>
-              <span class="count">10</span>
+              <span class="count">{{ item.like_count }}</span>
             </span>
           </p>
-          <p>评论的内容，。。。。</p>
+          <p>{{ item.content }}</p>
           <p>
-            <span class="time">两天内</span>&nbsp;
-            <van-tag plain @click="showReply=true">4 回复</van-tag>
+            <span class="time">{{ item.pubdate | transTime }}</span>&nbsp;
+            <van-tag plain @click="showReply=true">{{ item.reply_count }} 回复</van-tag>
           </p>
         </div>
       </div>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import { getComments } from '@/api/article.js'
 export default {
   data () {
     return {
@@ -47,7 +48,28 @@ export default {
       // 输入的内容
       value: '',
       // 控制提交中状态数据
-      submiting: false
+      submiting: false,
+      // 评论数据
+      commentList: [],
+      // 偏移量
+      offset: null
+    }
+  },
+  methods: {
+    async onLoad () {
+      const { artId } = this.$route.query
+      const res = await getComments({
+        type: 'a',
+        source: artId,
+        offset: this.offset
+      })
+      this.commentList.push(...res.results)
+      this.loading = false
+      //
+      this.finished = res.end_id === res.last_id
+      if (!this.finished) {
+        this.offset = res.last_id
+      }
     }
   }
 }
