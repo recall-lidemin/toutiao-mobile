@@ -4,16 +4,16 @@
       <van-list v-model="loading" :finished="finished" :finished-text="finishedText" @load="onLoad">
         <!-- 文章列表结构 -->
         <van-cell-group>
-          <van-cell v-for="item in articleList" :key="item.art_id.toString()">
+          <van-cell v-for="item in articleList" :key="item.art_id.toString()" :to="`/article?artId=${item.art_id}`">
             <div class="article_item">
               <h3 class="van-ellipsis">{{ item.title }}</h3>
               <div class="img_box" v-if="item.cover.images.length === 3">
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
-                <van-image class="w33" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[0]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[1]" />
+                <van-image class="w33" fit="cover" :src="item.cover.images[2]" />
               </div>
               <div class="img_box" v-if="item.cover.images.length === 1">
-                <van-image class="w100" fit="cover" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+                <van-image class="w100" fit="cover" :src="item.cover.images[0]" />
               </div>
               <div class="info_box">
                 <span>{{ item.aut_name }}</span>

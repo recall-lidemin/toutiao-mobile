@@ -5,7 +5,7 @@
       <van-list v-model="loading" :finished="finished" @load="onLoad" finished-text="没有更多了">
         <!-- 循环生成内容 -->
         <van-cell-group>
-          <van-cell v-for="item in articleList" :key="item.art_id.toString()">
+          <van-cell v-for="item in articleList" :key="item.art_id.toString()" :to="`/article?artId=${item.art_id}`">
             <!-- 文章列表 -->
             <div class="article_item">
               <!-- 文章标题 -->

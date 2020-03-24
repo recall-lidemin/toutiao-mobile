@@ -34,3 +34,19 @@ export function dislike (artid) {
 export function report (params) {
   return $http.post('article/reports', params)
 }
+
+/**
+ * 获取文章详情
+ * @param {*} id
+ */
+export function getArticleInfo (id) {
+  return $http.get(`articles/${id}`)
+}
+
+/**
+ * 获取文章评论
+ * @param {*} params
+ */
+export function getComments (params) {
+  return $http.get('comments', { params })
+}
