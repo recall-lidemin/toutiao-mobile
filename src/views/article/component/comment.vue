@@ -13,7 +13,7 @@
           <p>
             <span class="name">{{ item.aut_name }}</span>
             <span style="float:right">
-              <span class="van-icon van-icon-good-job-o zan"></span>
+              <span class="van-icon van-icon-good-job-o zan" @click="zan"></span>
               <span class="count">{{ item.like_count }}</span>
             </span>
           </p>
@@ -99,7 +99,7 @@ export default {
         this.offset = res.last_id
       }
     },
-    // 渲染回复列表
+    // 弹出回复层，渲染回复列表
     async openReply (id) {
       this.showReply = true
       this.reply.commId = id
@@ -125,30 +125,58 @@ export default {
         this.reply.offset = res.last_id
       }
     },
-    // 对文章发表评论
+    // 对文章发表评论或回复评论
     async submit () {
-      // 对文章发表评论
-      const { artId } = this.$route.query
-      // 接口更新后台数据
-      const res = await comments({
-        target: this.reply.commId === null ? artId : this.reply.commId,
-        content: this.value,
-        art_id: this.reply.commId === null ? null : artId
-      })
-      console.log(res)
-      // 清空输入框
-      this.value = ''
-      // 根据接口返回数据更新前台数据
-      if (!this.reply.commId) {
-        this.commentList.unshift(res.new_obj)
-      } else {
-        this.reply.replyCommentList.unshift(res.new_obj)
-        // 更新评论回复数量
-        console.log(this.reply.commId)
-        const replyCount = this.commentList.find(item => item.com_id.toString() === this.reply.commId)
-        replyCount.reply_count++
+      try {
+        // 根据有无token，判断是否登录，没有登录的提示去登录
+        if (!this.$store.state.user.token) {
+          this.$router.push({
+            path: '/login',
+            query: {
+              redirectUrl: this.$route.fullPath
+            }
+          })
+          return
+        }
+      } catch (error) {
+
       }
+      // 打开提交状态
+      this.submiting = true
+      // 延迟函数，控制评论频率
+      await this.$sleep(800)
+      try {
+        // 判断输入框是否有值
+        if (this.value === '') return
+        // 对文章发表评论
+        const { artId } = this.$route.query
+        // 接口更新后台数据
+        const res = await comments({
+          target: this.reply.commId === null ? artId : this.reply.commId,
+          content: this.value,
+          art_id: this.reply.commId === null ? null : artId
+        })
+        // 清空输入框
+        this.value = ''
+        // 根据接口返回数据更新前台数据
+        if (!this.reply.commId) {
+          this.commentList.unshift(res.new_obj)
+        } else {
+          this.reply.replyCommentList.unshift(res.new_obj)
+          // 更新评论回复数量
+          console.log(this.reply.commId)
+          const replyCount = this.commentList.find(item => item.com_id.toString() === this.reply.commId)
+          // 找到了就 ++
+          replyCount && replyCount.reply_count++
+        }
+      } catch (error) {
+        console.log(error.message)
+      }
+      // 提交完毕，关闭状态
+      this.submiting = false
     },
+    // 点赞
+    zan () {},
     // 监听回复框关闭事件
     closed () {
       // 关闭回复框之后重置
