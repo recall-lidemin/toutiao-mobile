@@ -42,8 +42,14 @@ export function unFollowUser (id) {
 
 /**
  * 获取用户信息
- * @param {*} userid
  */
-export function getUserInfo (userid) {
+export function getUserInfo () {
   return $http.get('user')
+}
+
+/**
+ * 获取用户资料
+ */
+export function getUserPtofile () {
+  return $http.get('user/profile')
 }
