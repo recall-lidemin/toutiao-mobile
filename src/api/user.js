@@ -53,3 +53,19 @@ export function getUserInfo () {
 export function getUserPtofile () {
   return $http.get('user/profile')
 }
+
+/**
+ * 更新用户头像
+ * @param {*} data
+ */
+export function updatePhoto (data) {
+  return $http.patch('user/photo', data)
+}
+
+/**
+ * 更新用户资料
+ * @param {*} data
+ */
+export function saveUserInfo (data) {
+  return $http.patch('user/profile', { ...data, photo: null })
+}

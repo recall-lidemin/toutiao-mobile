@@ -22,7 +22,12 @@
 
 <script>
 export default {
-
+  data () {
+    return {
+      value: '',
+      loading: false
+    }
+  }
 }
 </script>
 

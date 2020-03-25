@@ -1,50 +1,49 @@
 <template>
   <div class="container">
-    <van-nav-bar left-arrow @click-left="$router.back()" title="编辑资料" right-text="保存"></van-nav-bar>
+    <van-nav-bar left-arrow @click-left="$router.back()" title="编辑资料" right-text="保存" @click-right="saveUserInfo"></van-nav-bar>
     <van-cell-group>
       <van-cell is-link title="头像" center @click="photoShow = true">
         <van-image slot="default" width="1.5rem" height="1.5rem" fit="cover" round
-          :src="userProfile.photo" />
+          :src="photo ? photo : userInfo.photo" />
       </van-cell>
-      <van-cell is-link title="名称" :value="userProfile.name" @click="nameShow = true" />
-      <van-cell is-link title="性别" :value="userProfile.gender === 0 ? '男' : '女'"
+      <van-cell is-link title="名称" :value="userInfo.name" @click="nameShow=true" />
+      <van-cell is-link title="性别" :value="userInfo.gender === 0 ? '男' : '女'"
         @click="genderShow=true" />
-      <van-cell is-link title="生日" :value="userProfile.birthday" @click="dateShow=true" />
+      <van-cell is-link title="生日" :value="userInfo.birthday" @click="dateShow=true" />
     </van-cell-group>
     <!-- 头像弹层 -->
-    <van-popup v-model="photoShow" :style="{ width:'80%' }">
-      <van-cell is-link title="本地相册选择图片"></van-cell>
-       <van-cell is-link title="拍照"></van-cell>
-    </van-popup>
+    <van-action-sheet v-model="photoShow" cancel-text="取消" :actions="photoActions" @select="photoSelect">
+    <!-- 上传框 -->
+    <input type="file" style="display:none" ref="fileRef" @change="upload">
+    </van-action-sheet>
     <!-- 昵称弹层 -->
     <van-popup v-model="nameShow" :style="{ width:'80%' }">
       <van-panel title="修改用户昵称">
-        <van-field v-model="userInfo.name" label="文本" placeholder="请输入昵称" />
+        <van-field v-model.trim="userInfo.name" label="昵称" placeholder="请输入昵称" />
         <template #footer>
-          <van-button size="small" type="primary">保存</van-button>
+          <van-button size="small" type="primary" @click="saveName">保存</van-button>
         </template>
       </van-panel>
     </van-popup>
     <!-- 性别弹层 -->
-    <van-popup v-model="genderShow" position="bottom" :style="{ height: '30%' }">
-      <van-picker show-toolbar :default-index="userProfile.gender" :columns="columns"
-        @cancel="genderShow = false" @confirm="genderConfirm" />
-    </van-popup>
+    <van-action-sheet v-model="genderShow" cancel-text="取消" :actions="actions" @select="onSelect">
+    </van-action-sheet>
     <!-- 日期弹出层 -->
     <van-popup v-model="dateShow" position="bottom" :style="{ height: '30%' }">
       <van-datetime-picker v-model="currentDate" type="date" :min-date="minDate" :max-date="maxDate"
         @cancel="dateShow = false" @confirm="dateConfirm" />
     </van-popup>
+    <!-- 上传组件 -->
+
   </div>
 </template>
 
 <script>
-import { getUserPtofile } from '@/api/user.js'
+import dayjs from 'dayjs'
+import { getUserPtofile, updatePhoto, saveUserInfo } from '@/api/user.js'
 export default {
   data () {
     return {
-      // 用户资料
-      userProfile: {},
       // 控制弹层显示与隐藏参数
       dateShow: false,
       genderShow: false,
@@ -55,33 +54,80 @@ export default {
       maxDate: new Date(2025, 10, 1),
       currentDate: new Date(),
       // 性别参数
-      columns: ['男', '女'],
+      actions: [{ name: '男' }, { name: '女' }],
+      // 上传头像
+      photoActions: [{ name: '本地上传' }, { name: '拍照' }],
       // 编辑用户资料参数
       userInfo: {
         name: '',
         photo: '',
-        gender: '',
+        gender: 1,
         birthday: ''
-      }
+      },
+      base64: '',
+      photo: ''
     }
   },
   methods: {
     // 获取用户资料
     async getUserPtofile () {
-      this.userProfile = await getUserPtofile()
-      this.userProfile.birthday.split('-').join(',')
+      this.userInfo = await getUserPtofile()
+      this.userInfo.birthday.split('-').join(',')
+      console.log(this.userInfo)
     },
     // 日期弹层确认事件
     dateConfirm (value) {
-      console.log(value)
-      console.log(this.userProfile.birthday.split('-').join(','))
-
+      this.userInfo.birthday = dayjs(value).format('YYYY-MM-DD')
       this.dateShow = false
     },
-    // 性别弹层的确认事件
-    genderConfirm (value) {
-      console.log(value)
+    // 监听性别选中事件
+    onSelect (action, index) {
+      console.log(index)
+
+      this.userInfo.gender = index
       this.genderShow = false
+    },
+    // openNameShow () {
+    //   this.nameShow = true
+    //   this.userInfo.name = this.userProfile.name
+    // },
+    // 保存昵称
+    saveName () {
+      this.nameShow = false
+      // this.userProfile.name = this.userInfo.name
+    },
+    // 监听选中了哪个上传事件，然后触发对应上传事件
+    photoSelect (action, index) {
+      if (index === 0) {
+        this.$refs.fileRef.click()
+      }
+    },
+    // 上传事件
+    async upload () {
+      // 实例一个formdata对象
+      const formdata = new FormData()
+      formdata.append('photo', this.$refs.fileRef.files[0])
+      const res = await updatePhoto(formdata)
+      // 更新本地头像
+      this.photo = res.photo
+      // 图片转base64
+      const fr = new FileReader()
+      fr.readAsDataURL(this.$refs.fileRef.files[0])
+      fr.onload = (e) => {
+        this.userInfo.photo = e.target.result.split(',')[1]
+      }
+      this.photoShow = false
+    },
+    // 保存用户信息
+    async saveUserInfo () {
+      try {
+        console.log(this.userInfo.gender)
+
+        const res = await saveUserInfo(this.userInfo)
+        console.log(res)
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   created () {
