@@ -39,3 +39,11 @@ export function followUser (id) {
 export function unFollowUser (id) {
   return $http.delete(`user/followings/${id}`)
 }
+
+/**
+ * 获取用户信息
+ * @param {*} userid
+ */
+export function getUserInfo (userid) {
+  return $http.get('user')
+}
