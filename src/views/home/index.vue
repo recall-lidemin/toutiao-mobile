@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <van-tabs v-model="activeIndex">
+    <van-tabs v-model="activeIndex" @change="changeTabs">
       <!-- v-for循环渲染tab页签 -->
       <van-tab :title="item.name" v-for="item in channelList" :key="item.id">
        <!-- 文章列表 -->
@@ -58,6 +58,12 @@ export default {
     }
   },
   methods: {
+    // 监听切换页签事件
+    changeTabs () {
+      // 广播一个消息,让对应页签中得文章列表滚动记忆得位置
+      // 把当前激活页签得频道id传出
+      EventBus.$emit('changeTab', this.channelList[this.activeIndex].id)
+    },
     // 获取频道
     async getChannelList () {
       const res = await getMyChannel()

@@ -1,6 +1,6 @@
 <template>
-  <!--  -->
-  <div class="scroll-wrapper">
+  <!-- 做阅读记忆,滚到哪回来还是哪里 -->
+  <div class="scroll-wrapper" @scroll="remember" ref="myScroll">
     <van-pull-refresh v-model="isLoading" @refresh="onRefresh" :success-text="successText">
       <van-list v-model="loading" :finished="finished" @load="onLoad" finished-text="没有更多了">
         <!-- 循环生成内容 -->
@@ -72,11 +72,22 @@ export default {
         timestamp: this.timestamp || Date.now()
       },
       // 存放历史时间戳
-      timestamp: null
+      timestamp: null,
+      // 滚动位置
+      scrollTop: 0
 
     }
   },
   methods: {
+    // 记忆滚动位置
+    remember (event) {
+      clearTimeout(this.timer)
+      this.timer = setTimeout(() => {
+        // 记录滚动位置
+        this.scrollTop = event.target.scrollTop
+        console.log(this.scrollTop)
+      }, 500)
+    },
     // 实现上拉刷新，获取数据，添加到尾部
     async onLoad () {
       await this.$sleep()
@@ -120,7 +131,6 @@ export default {
       this.isLoading = false
     }
   },
-
   created () {
     // 监听删除文章事件
     EventBus.$on('delArticle', (artId, channelId) => {
@@ -135,9 +145,26 @@ export default {
         }
       }
     })
+    EventBus.$on('changeTab', (channelId) => {
+      // 如果当前频道id等于传入得频道id,那么就是当前频道
+      if (this.channelId === channelId) {
+        // 保证之前得异步渲染已经完成
+        this.$nextTick(() => {
+          if (this.$refs.myScroll && this.scrollTop) {
+            this.$refs.myScroll.scrollTop = this.scrollTop
+          }
+        })
+      }
+    })
   },
   computed: {
     ...mapState(['user'])
+  },
+  // keep-alive激活函数
+  activated () {
+    if (this.$refs.myScroll && this.scrollTop) {
+      this.$refs.myScroll.scrollTop = this.scrollTop
+    }
   }
 }
 </script>

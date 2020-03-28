@@ -14,7 +14,12 @@
 
     <!-- 二级路由容器占位符 -->
     <div class="my-wrapper" :class="{ noTop: $route.path === '/user' }">
-      <router-view></router-view>
+      <!-- 使用keep-alive包裹后,里面得组件就不会被销毁了,这里把整个二级路由组件进行了缓存
+           缓存得是虚拟DOM
+       -->
+      <keep-alive>
+        <router-view></router-view>
+      </keep-alive>
     </div>
 
     <!-- 顶部标签栏组件 -->
