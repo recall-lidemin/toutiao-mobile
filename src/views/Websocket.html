@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体验WebSocket</title>
+  <style>
+    .box{
+      width: 800px;
+      height: 600px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="box"></div>
+  <input type="text" id="message">
+  <button onclick="createWs()">建立连接</button>
+  <button onclick="send()">发送消息</button>
+  <button onclick="closeWs()">关闭连接</button>
+  <script>
+    var ws,dom,msg;
+    var isOpen = false
+    dom = document.querySelector('.box')
+    msg = document.querySelector('#message')
+    // 1.建立连接
+    function createWs(){
+      // 建立与服务端的联系 new WebSocket('服务端地址')
+      ws = new WebSocket("wss://echo.websocket.org")
+      // 如果建立连接成功
+      ws.onopen = function(event) {
+        isOpen = true
+        dom.innerHTML = dom.innerHTML + '<p>与服务器建立连接成功</p>'
+      }
+      // 接收消息
+      ws.onmessage = function(event){
+        dom.innerHTML = dom.innerHTML + `<p style="color:red">服务器说：${event.data}</p>`
+      }
+    }
+    // 2.发送消息，接收消息
+    function send(){
+      // 发消息要等到内容不为空，并且成功建立连接
+      if(msg.value && isOpen){
+        ws.send(msg.value)
+        dom.innerHTML = dom.innerHTML + `<p>我说：${msg.value}</p>`
+      }
+    }
+    // 3.关闭连接
+    function closeWs(){
+      ws.close()
+      // 关闭成功
+      ws.onclose = function(){
+        isOpen = false
+        dom.innerHTML = dom.innerHTML + `<p>关闭连接成功</p>`
+      }
+    }
+  </script>
+</body>
+</html>
