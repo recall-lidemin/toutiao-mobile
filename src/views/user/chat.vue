@@ -2,19 +2,20 @@
  <div class="container">
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
     <div class="chat-list">
-      <div class="chat-item left">
-        <van-image fit="cover" round :src="XZImg" />
-        <div class="chat-pao">ewqewq</div>
+      <div class="chat-item" :class="{ left: item.name === 'xz',right: item.name !== 'xz' }"  v-for="(item,index) in msgList" :key="index">
+        <van-image fit="cover" round :src="XZImg" v-if="item.name === 'xz'" />
+        <div class="chat-pao">{{ item.msg }}</div>
+        <van-image  fit="cover" round :src="photo" v-if="item.name !== 'xz'"/>
       </div>
-      <div class="chat-item right">
+      <!-- <div class="chat-item right">
         <div class="chat-pao">ewqewq</div>
         <van-image  fit="cover" round :src="photo" />
-      </div>
+      </div> -->
     </div>
     <div class="reply-container van-hairline--top">
-      <van-field v-model="value" placeholder="说点什么...">
+      <van-field v-model.trim="value" placeholder="说点什么...">
         <van-loading v-if="loading" slot="button" type="spinner" size="16px"></van-loading>
-        <span v-else @click="send()" slot="button" style="font-size:12px;color:#999">提交</span>
+        <span v-else @click="send" slot="button" style="font-size:12px;color:#999">提交</span>
       </van-field>
     </div>
   </div>
@@ -33,7 +34,29 @@ export default {
       value: '',
       loading: false,
       // 存放聊天记录
-      msgList: []
+      msgList: [],
+      isOpen: false
+
+    }
+  },
+  methods: {
+    // 发送消息
+    send () {
+      // 判断消息框
+      if (!this.value) return
+      // 打开加载状态，防止重复提交
+      this.loading = true
+      // 使用websocket发送消息
+      // this.socket.emit(消息类型，消息内容)
+      // 聊天内容
+      const msgObj = {
+        msg: this.value,
+        timestamp: Date.now()
+      }
+      this.socket.emit('message', msgObj)
+      this.msgList.push(msgObj)
+      this.value = ''
+      this.loading = false
     }
   },
   computed: {
@@ -49,7 +72,10 @@ export default {
     // 监听连接成功，接收
     this.socket.on('connect', () => {
       this.isOpen = true
-      this.msgList.push({ msg: '秃头小王子', name: 'xz' })
+    })
+    // 监听消息回复
+    this.socket.on('message', data => {
+      this.msgList.push({ ...data, name: 'xz' })
     })
   }
 }
