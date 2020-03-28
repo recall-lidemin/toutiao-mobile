@@ -23,16 +23,34 @@
 <script>
 import XZImg from '@/assets/head.jpg'
 import { mapState } from 'vuex'
+import io from 'socket.io-client'
 export default {
   data () {
     return {
+      // 机器人头像
       XZImg,
+      // 输入框
       value: '',
-      loading: false
+      loading: false,
+      // 存放聊天记录
+      msgList: []
     }
   },
   computed: {
-    ...mapState(['photo'])
+    ...mapState(['photo', 'user'])
+  },
+  created () {
+    // 建立WebSocket连接
+    // new WebSocket(地址)
+    // io(地址,{})
+    this.socket = io('http://ttapi.research.itcast.cn', {
+      query: { token: this.user.token }
+    })
+    // 监听连接成功，接收
+    this.socket.on('connect', () => {
+      this.isOpen = true
+      this.msgList.push({ msg: '秃头小王子', name: 'xz' })
+    })
   }
 }
 </script>
