@@ -41,6 +41,7 @@
 <script>
 import dayjs from 'dayjs'
 import { getUserPtofile, updatePhoto, saveUserInfo } from '@/api/user.js'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -69,11 +70,11 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['updatePhoto']),
     // 获取用户资料
     async getUserPtofile () {
       this.userInfo = await getUserPtofile()
       this.userInfo.birthday.split('-').join(',')
-      console.log(this.userInfo)
     },
     // 日期弹层确认事件
     dateConfirm (value) {
@@ -82,8 +83,6 @@ export default {
     },
     // 监听性别选中事件
     onSelect (action, index) {
-      console.log(index)
-
       this.userInfo.gender = index
       this.genderShow = false
     },
@@ -102,7 +101,7 @@ export default {
         this.$refs.fileRef.click()
       }
     },
-    // 上传事件
+    // 上传头像
     async upload () {
       // 实例一个formdata对象
       const formdata = new FormData()
@@ -110,6 +109,8 @@ export default {
       const res = await updatePhoto(formdata)
       // 更新本地头像
       this.photo = res.photo
+      // 更新vuex中得共享数据头像
+      this.updatePhoto({ photo: res.photo })
       // 图片转base64
       const fr = new FileReader()
       fr.readAsDataURL(this.$refs.fileRef.files[0])
@@ -121,11 +122,9 @@ export default {
     // 保存用户信息
     async saveUserInfo () {
       try {
-        console.log(this.userInfo.gender)
-        const res = await saveUserInfo(this.userInfo)
-        console.log(res)
+        await saveUserInfo(this.userInfo)
       } catch (error) {
-        console.log(error)
+
       }
     }
   },

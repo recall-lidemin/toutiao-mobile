@@ -56,10 +56,14 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['delToken']),
+    ...mapMutations(['delToken', 'updatePhoto']),
+    // 获取用户信息
     async getUserInfo () {
       this.userInfo = await getUserInfo()
+      // 设置头像
+      this.updatePhoto({ photo: this.userInfo.photo })
     },
+    // 退出
     logout () {
       this.delToken()
       this.$store.state.user = {}

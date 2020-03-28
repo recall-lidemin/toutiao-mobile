@@ -8,7 +8,7 @@
       </div>
       <div class="chat-item right">
         <div class="chat-pao">ewqewq</div>
-        <van-image  fit="cover" round src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <van-image  fit="cover" round :src="photo" />
       </div>
     </div>
     <div class="reply-container van-hairline--top">
@@ -22,6 +22,7 @@
 
 <script>
 import XZImg from '@/assets/head.jpg'
+import { mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -29,6 +30,9 @@ export default {
       value: '',
       loading: false
     }
+  },
+  computed: {
+    ...mapState(['photo'])
   }
 }
 </script>
