@@ -1,7 +1,7 @@
 <template>
  <div class="container">
     <van-nav-bar fixed left-arrow @click-left="$router.back()" title="小智同学"></van-nav-bar>
-    <div class="chat-list">
+    <div class="chat-list" ref="myList">
       <div class="chat-item" :class="{ left: item.name === 'xz',right: item.name !== 'xz' }"  v-for="(item,index) in msgList" :key="index">
         <van-image fit="cover" round :src="XZImg" v-if="item.name === 'xz'" />
         <div class="chat-pao">{{ item.msg }}</div>
@@ -57,6 +57,14 @@ export default {
       this.msgList.push(msgObj)
       this.value = ''
       this.loading = false
+      this.scrollBottom()
+    },
+    // 设置滚动条
+    scrollBottom () {
+      // 此函数会在上一次数据更新,并且完成页面渲染后,才会去执行
+      this.$nextTick(() => {
+        this.$refs.myList.scrollTop = this.$refs.myList.scrollHeight
+      })
     }
   },
   computed: {
@@ -76,7 +84,12 @@ export default {
     // 监听消息回复
     this.socket.on('message', data => {
       this.msgList.push({ ...data, name: 'xz' })
+      this.scrollBottom()
     })
+  },
+  // 在实例销毁前,关掉WebSocket
+  beforeDestroy () {
+    this.socket.close()
   }
 }
 </script>
