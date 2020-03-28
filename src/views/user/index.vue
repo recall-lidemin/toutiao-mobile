@@ -40,13 +40,14 @@
       <van-cell icon="edit" title="编辑资料" to="/user/profile" is-link />
       <van-cell icon="chat-o" title="小智同学" to="/user/chat" is-link />
       <van-cell icon="setting-o" title="系统设置" is-link />
-      <van-cell icon="warning-o" title="退出登录" to="/login" is-link />
+      <van-cell icon="warning-o" title="退出登录" to="/login" @click="logout" is-link />
     </van-cell-group>
   </div>
 </template>
 
 <script>
 import { getUserInfo } from '@/api/user.js'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -55,8 +56,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['delToken']),
     async getUserInfo () {
       this.userInfo = await getUserInfo()
+    },
+    logout () {
+      this.delToken()
+      this.$store.state.user = {}
     }
   },
   created () {

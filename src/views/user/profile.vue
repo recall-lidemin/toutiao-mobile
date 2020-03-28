@@ -6,10 +6,10 @@
         <van-image slot="default" width="1.5rem" height="1.5rem" fit="cover" round
           :src="photo ? photo : userInfo.photo" />
       </van-cell>
-      <van-cell is-link title="名称" :value="userInfo.name" @click="nameShow=true" />
+      <van-cell is-link title="昵称" :value="userInfo.name" @click="nameShow=true" />
       <van-cell is-link title="性别" :value="userInfo.gender === 0 ? '男' : '女'"
         @click="genderShow=true" />
-      <van-cell is-link title="生日" :value="userInfo.birthday" @click="dateShow=true" />
+      <van-cell is-link title="出生日期" :value="userInfo.birthday" @click="dateShow=true" />
     </van-cell-group>
     <!-- 头像弹层 -->
     <van-action-sheet v-model="photoShow" cancel-text="取消" :actions="photoActions" @select="photoSelect">
@@ -61,7 +61,7 @@ export default {
       userInfo: {
         name: '',
         photo: '',
-        gender: 1,
+        gender: 0,
         birthday: ''
       },
       base64: '',
@@ -122,7 +122,6 @@ export default {
     async saveUserInfo () {
       try {
         console.log(this.userInfo.gender)
-
         const res = await saveUserInfo(this.userInfo)
         console.log(res)
       } catch (error) {
