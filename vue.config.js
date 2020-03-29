@@ -16,5 +16,6 @@ module.exports = {
       // 在生产环境，移除所有console
       config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
     }
-  }
+  },
+  publicPath: './'
 }
