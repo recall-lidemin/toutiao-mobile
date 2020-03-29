@@ -22,7 +22,8 @@ const routes = [
     children: [
       {
         path: '',
-        component: Home
+        component: Home,
+        meta: { isAlive: true }
       },
       {
         path: '/question',
